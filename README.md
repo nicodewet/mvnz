@@ -86,8 +86,13 @@ There are some things I would want to do immediately:
 
 This is a record of what was done to enhance the robustness of the application.
 
-At present we don't return the ErrorModel as we should do, as a starter, so I'm fixing this first. 
+We're using Spring's Aspect Oriented Programming (AOP) abilities and dealing with a subset of potential cases in
+RestResponseEntityExceptionHandler. 
 
-We would never want to see a stack trace exposed, a bad look.
+In this class we use the Error model as specified in the openapi-companies.yaml specification.
 
-THIS IS IN PROGRESS - appropriate error handling and the use of the Error model being worked on.
+This work is not done though, we need to use the Error model for additional obvious validation errors and naturally
+we need to add test cases. 
+
+Telemetry using a scraping endpoint is not something we're building in right now, but it would be wise if one were to 
+take this code to production. The latter would naturally include alerting.
