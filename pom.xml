@@ -15,9 +15,6 @@
 	<description>Demo project for MWNZ</description>
 	<properties>
 		<java.version>22</java.version>
-		<!--
-		<start-class>org.openapitools.OpenApiGeneratorApplication</start-class>
-		-->
 	</properties>
 	<dependencies>
 		<dependency>
@@ -66,7 +63,7 @@
   			<artifactId>jsr305</artifactId>
   			<version>3.0.2</version>
 		</dependency>
-		
+		<!-- JAXB Dependencies START -->
 		<dependency>
 			<groupId>jakarta.xml.bind</groupId>
 			<artifactId>jakarta.xml.bind-api</artifactId>
@@ -83,6 +80,7 @@
 			<version>4.0.4</version>
 			<scope>runtime</scope>
 		</dependency>
+		<!-- JAXB Dependencies END -->
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

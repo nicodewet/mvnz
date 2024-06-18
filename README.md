@@ -1,5 +1,5 @@
 # mvnz
-My Spring-Boot implementation of a [MWNZ exercise](https://github.com/MiddlewareNewZealand/evaluation-instructions).
+My [Spring Boot](https://spring.io/projects/spring-boot) implementation of a [MWNZ exercise](https://github.com/MiddlewareNewZealand/evaluation-instructions).
 
 ## Up & Running
 
@@ -43,13 +43,16 @@ in order to deliver a working implementation.
 
 An early decision was to copy the specification of the exposed companies API and the xml API into src/main/resources.
 
-This was since I wanted to use the Open API generator, via a Maven plugin, to generate both the server stub and the client for the respective companies API and xml API.
+This was since I wanted to use the [OpenAPI generator](https://openapi-generator.tech/), via a Maven plugin, to generate both the server 
+stub and the client for the respective companies API and xml API.
 
-I decided to copy generated code into src/main and to deactivate the plugin during the subsequent build. I was in two minds about this but ultimately given discoveries down the road this is/was a good thing.
+I decided to copy generated code into src/main and to deactivate the plugin during the subsequent build. I was in two minds about this but 
+ultimately given discoveries down the road this is/was a good thing.
 
-## openapi-xml.yaml
+### openapi-xml.yaml
 
-The supplied URL did not work for me, returned a 404, so I changed it in my implementation to something that works based on trial and error using cURL. 
+The supplied URL did not work for me, returned a 404, so I changed it in my implementation to something that works based on trial and error 
+using cURL. 
 
 I needed to fix a couple of additional aspects:
 
@@ -58,11 +61,26 @@ I needed to fix a couple of additional aspects:
 3. I had to modify the generated ApiClient class to use Jaxb2RootElementHttpMessageConverter so that the chosen library (RestTemplate) could deserialize the XML we would receive.
 4. I had to fix a tricky Spring Boot XML runtime library dependency issue.
 
-Perhaps one could argue the openapi-xml.yaml specification is incorrect and just stop developing however I could not change the XML files, so chose to apply Postel's Law and make the implementation
-liberal.
+Perhaps one could argue the openapi-xml.yaml specification is incorrect and just stop developing however I could not change the XML files, 
+so chose to apply [Postel's Law](https://en.wikipedia.org/wiki/Robustness_principle) and make the implementation liberal.
 
-I've noted the XML Object section of the Open API v3.0.2 specification, as well as the use of application/xml in the openapi-xml.yaml specification. Parking that, I'm still curious as to 
-whether Open API Generator would be able to generate an implementation that works so that steps 2 to 4 are not necessary.
+I've noted the XML Object section of the Open API v3.0.2 specification, as well as the use of application/xml in the openapi-xml.yaml 
+specification. Parking that, I'm still curious as to whether Open API Generator would be able to generate an implementation that works so 
+that steps 2 to 4 are not necessary.
+
+### Should I continue using OpenAPI Generator? What would I change, if anything?
+
+It's important to remember we inherited two specifications in this implementation. Also, I don't use OpenAPI Generator day in, day out. 
+Also it may well be that I used a suboptimal configuration.
+
+In general though, I do want to know whether a given OpenAPI specification will work for me, is generating code even possible? Is the 
+specification valid? It is a measure of quality and care (by whoever produced the specification).
+
+There are some things I would want to do immediately:
+1. Remove all the redundant code I've inherited, this could entail using openapi-generator-maven-plugin as intended.
+2. Add steps to validate both OpenAPI specifications (as a sanity check, ideally an author would do so, but it's not always the case).
+3. Investigate whether I could have done better in terms of using the generator for the XML client
+4. Delete the bulk of the dead code in the xml client package, I'd largely start from scratch, I don't think using the generator helps here.
 
 ## Robustness and Error Handling
 
