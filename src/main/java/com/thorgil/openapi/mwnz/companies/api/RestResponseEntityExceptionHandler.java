@@ -8,11 +8,13 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import org.springframework.http.HttpHeaders;
@@ -22,7 +24,7 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
 
     private static final Logger logger = LoggerFactory.getLogger(RestResponseEntityExceptionHandler.class);
     private static final String COMPANY_NOT_FOUND_MESSAGE = "The company with id {0} was not found";
-    private static final String UNEXPECTED_ERROR_MESSAGE = "An unexpected error occurred";
+    private static final String UNEXPECTED_ERROR_MESSAGE = "An unexpected error occurred when fetching the company with id {0}";
     private static final Pattern COMPANY_ID_PATTERN = Pattern.compile("/companies/(\\w+)");
 
     public RestResponseEntityExceptionHandler() {
@@ -30,9 +32,9 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
     }
 
     @ExceptionHandler(value = { HttpClientErrorException.class })
-    protected ResponseEntity<Object> handleHttpClientErrorException(HttpClientErrorException hcee, WebRequest request) {
+    protected ResponseEntity<Object> handleHttpClientErrorException(HttpClientErrorException httpClientErrorException, WebRequest request) {
         Error error = new Error();
-        HttpStatusCode status = hcee.getStatusCode();
+        HttpStatusCode status = httpClientErrorException.getStatusCode();
         String pathParameter = extractPathParameter(request, COMPANY_ID_PATTERN);
 
         if (status == NOT_FOUND) {
@@ -40,12 +42,26 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
             error.setErrorDescription(MessageFormat.format(COMPANY_NOT_FOUND_MESSAGE, pathParameter));
         } else {
             error.setError(status.toString());
-            error.setErrorDescription(UNEXPECTED_ERROR_MESSAGE);
+            error.setErrorDescription(MessageFormat.format(UNEXPECTED_ERROR_MESSAGE, pathParameter));
         }
 
-        logger.error("HttpClientErrorException: {}", hcee.getMessage(), hcee);
+        logger.error("HttpClientErrorException: {}", httpClientErrorException.getMessage(), httpClientErrorException);
 
-        return handleExceptionInternal(hcee, error, new HttpHeaders(), status, request);
+        return handleExceptionInternal(httpClientErrorException, error, new HttpHeaders(), status, request);
+    }
+    @ExceptionHandler(value = { ResourceAccessException.class })
+    protected ResponseEntity<Object> handleResourceAccessException(ResourceAccessException resourceAccessException, WebRequest request) {
+
+        HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
+        String pathParameter = extractPathParameter(request, COMPANY_ID_PATTERN);
+
+        Error error = new Error();
+        error.setError(status.name());
+        error.setErrorDescription(MessageFormat.format(UNEXPECTED_ERROR_MESSAGE, pathParameter));
+
+        logger.error("ResourceAccessException: {}", resourceAccessException.getMessage(), resourceAccessException);
+
+        return handleExceptionInternal(resourceAccessException, error, new HttpHeaders(), status, request);
     }
 
     /**
