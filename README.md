@@ -3,6 +3,11 @@ My [Spring Boot](https://spring.io/projects/spring-boot) implementation of a [MW
 
 ## Up & Running
 
+There are two main requirements to run this program on your local machine (in time a Docker image might be provided):
+
+1. JDK 22 (compatibility with earlier versions has not been confirmed)
+2. Either using the Maven Wrapper Script (recommended) or installing Maven
+
 If you want to get the application up and running on your machine, use the [Apache Maven
 Wrapper](https://maven.apache.org/wrapper/) and the scripts appropriate to your operating
 system.
