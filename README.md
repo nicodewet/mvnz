@@ -36,7 +36,7 @@ Once the application is running, you can exercise it end-to-end using your favou
 
 ## Decisions and Fixes
 
-This is a record of the decisions made, with motivtion, and some fixes that were applied
+This is a record of the decisions made, with motivation, and some fixes that were applied
 in order to deliver a working implementation.
 
 ## openapi-generator-maven-plugin
@@ -54,7 +54,7 @@ The supplied URL did not work for me, returned a 404, so I changed it in my impl
 I needed to fix a couple of additional aspects:
 
 1. The URL would return media type for text/plain, so I had to make the implementation liberal enough to accept this (it would not do so by default).
-2. It was unsurprising that the generated XmlCompany model was not going to work, as it expected JSON, so I had to create an ActualXmlCompany type with JAXB annotations.
+2. It was unsurprising that the generated XmlCompany model was not going to work, as the generated implementation expected JSON, so I had to create an ActualXmlCompany type with JAXB annotations.
 3. I had to modify the generated ApiClient class to use Jaxb2RootElementHttpMessageConverter so that the chosen library (RestTemplate) could deserialize the XML we would receive.
 4. I had to fix a tricky Spring Boot XML runtime library dependency issue.
 
