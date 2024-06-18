@@ -107,4 +107,4 @@ take this code to production. The latter would naturally include alerting.
 I'm not sure unit testing would be a good fit with the codebase as it is now, not just because we don't have a domain layer, but also
 because it would make refactoring harder (e.g. we may want to remove RestTemplate).
 
-I'm going to start with [wiremock](https://www.wiremock.io/what-is-wiremock) for the reasons I have explained above. This is a WIP.
+I'm going to start with [wiremock](https://wiremock.org/) for the reasons I have explained above. This is a WIP.
