@@ -32,15 +32,13 @@ public class CompaniesApiService implements CompaniesApiDelegate {
     public ResponseEntity<Company> companiesIdGet(BigDecimal id) {
 
         ActualXmlCompany xmlCompany = companiesXmlApi.xmlApiIdXmlGet(id);
-        if (xmlCompany != null) {
-            Company company = new Company();
-            company.setDescription(xmlCompany.getDescription());
-            company.setId(xmlCompany.getId());
-            company.setName(xmlCompany.getName());
-            // TODO set header here
-            return ResponseEntity.ok().body(company);
-        } else {
-            throw new IllegalArgumentException();
-        }
+
+        Company company = new Company();
+        company.setDescription(xmlCompany.getDescription());
+        company.setId(xmlCompany.getId());
+        company.setName(xmlCompany.getName());
+        // TODO set header here
+        return ResponseEntity.ok().body(company);
+
     }
 }
