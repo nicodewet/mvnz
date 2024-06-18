@@ -58,8 +58,11 @@ I needed to fix a couple of additional aspects:
 3. I had to modify the generated ApiClient class to use Jaxb2RootElementHttpMessageConverter so that the chosen library (RestTemplate) could deserialize the XML we would receive.
 4. I had to fix a tricky Spring Boot XML runtime library dependency issue.
 
-Naturally one could argue the openapi-xml.yaml specification is incorrect and just stop developing however I could not change the XML files, so chose to apply Postel's Law and make the implementation
+Perhaps one could argue the openapi-xml.yaml specification is incorrect and just stop developing however I could not change the XML files, so chose to apply Postel's Law and make the implementation
 liberal.
+
+I've noted the XML Object section of the Open API v3.0.2 specification, as well as the use of application/xml in the openapi-xml.yaml specification. Parking that, I'm still curious as to 
+whether Open API Generator would be able to generate an implementation that works so that steps 2 to 4 are not necessary.
 
 ## Robustness and Error Handling
 
