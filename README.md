@@ -66,7 +66,7 @@ I needed to fix a couple of additional aspects:
 2. It was unsurprising that the generated XmlCompany model was not going to work, as the generated implementation expected JSON, so I had to create an ActualXmlCompany type with JAXB annotations.
 3. I had to modify the generated ApiClient class to use Jaxb2RootElementHttpMessageConverter so that the chosen library (RestTemplate) could deserialize the XML we would receive.
 4. I had to fix a tricky Spring Boot XML runtime library dependency issue.
-5. The generated code hardcoded the basePath of the XML API, naturally this needed to be attended to replace it with the URL of a test double.
+5. The generated code hardcoded the basePath of the XML API, naturally this needed to be attended to in order to replace it with the URL of a test double.
 
 Perhaps one could argue the openapi-xml.yaml specification is incorrect and just stop developing however I could not change the XML files, 
 so chose to apply [Postel's Law](https://en.wikipedia.org/wiki/Robustness_principle) and make the implementation liberal.
