@@ -78,7 +78,7 @@ that steps 2 to 4 are not necessary.
 ### Should I continue using OpenAPI Generator? What would I change, if anything?
 
 It's important to remember we inherited two specifications in this implementation. Also, I don't use OpenAPI Generator day in, day out. 
-Also it may well be that I used a suboptimal configuration.
+Also, it may well be that I used a suboptimal configuration.
 
 In general though, I do want to know whether a given OpenAPI specification will work for me, is generating code even possible? Is the 
 specification valid? It is a measure of quality and care (by whoever produced the specification).
@@ -99,14 +99,32 @@ RestResponseEntityExceptionHandler.
 In this class we use the Error model as specified in the openapi-companies.yaml specification.
 
 This work is not done though, we need to use the Error model for additional obvious validation errors and naturally
-we need to add test cases. 
+we need to add test cases. As an additional TODO we may want to add appropriate backoff algorithms (ala resilience4j)
+but this has not been a higher priority than basic functional correctness in my mind.
 
 Telemetry using a scraping endpoint is not something we're building in right now, but it would be wise if one were to 
 take this code to production. The latter would naturally include alerting.
+
+## Browser Component Considerations
+
+The provided companies API is being called from a browser component in the instructions. At present I have not provided headers for 
+Cross-Origin Resource Sharing (CORS) in the response to API calls.
+
+As a TODO, I need to consider Cross-Origin Resource Sharing (CORS) when producing a RESTful web API that will be callable from a browser. 
+CORS is a security feature implemented by browsers to restrict how resources on one web page can be requested from another domain. If the 
+companies API and the client consuming the API are on different domains, CORS needs to be handled properly.
+
+See [this guide that is relevant to Spring Boot](https://spring.io/guides/gs/rest-service-cors).
 
 ## Testing
 
 I'm not sure unit testing would be a good fit with the codebase as it is now, not just because we don't have a domain layer, but also
 because it would make refactoring harder (e.g. we may want to remove RestTemplate).
 
-I'm going to start with [wiremock](https://wiremock.org/) for the reasons I have explained above. This is a WIP.
+I opted to start with [wiremock](https://wiremock.org/) because I'm expecting to do significant 
+refactoring given the nature of the generated code and so thought testing layers within the application is not wise.
+
+Please see [CompaniesApiControllerWireMockTests](src/test/java/com/thorgil/mwnz/CompaniesApiControllerWireMockTests.java).
+
+As a TODO, additional test cases should be added to exercise the CompaniesApiController to ensure the Error model is returned in certain 
+cases such when the caller use and incorrect type - using Wiremock is unnecessary here. 
