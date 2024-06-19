@@ -5,6 +5,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.status;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
+import com.github.tomakehurst.wiremock.http.Fault;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
@@ -81,6 +82,34 @@ public class CompaniesApiControllerWireMockTests {
                         {
                             "error": "NOT_FOUND",
                             "error_description": "The company with id 0 was not found"
+                        }
+                        """);
+
+    }
+
+    /**
+     * MALFORMED_RESPONSE_CHUNK: Send an OK status header, then garbage, then close the connection.
+     * See: https://wiremock.org/docs/simulating-faults/#bad-responses
+     */
+    @Test
+    void givenMalformedResponse_WhenWeFetchACompany_ThenWeGetTheExpectedErrorJSON() {
+
+        // GIVEN
+        wireMockServer.stubFor(WireMock.get("/xml-api/1.xml")
+                .willReturn(aResponse().withFault(Fault.MALFORMED_RESPONSE_CHUNK)));
+
+        // WHEN & THEN
+        this.webTestClient
+                .get()
+                .uri("/v1/companies/1")
+                .exchange()
+                .expectStatus()
+                .is5xxServerError()
+                .expectBody().json(
+                        """
+                        {
+                            "error": "INTERNAL_SERVER_ERROR",
+                            "error_description": "An unexpected error occurred when fetching the company with id 1"
                         }
                         """);
 
