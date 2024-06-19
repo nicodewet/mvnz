@@ -1,6 +1,7 @@
 package com.thorgil.mwnz;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.status;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
@@ -28,7 +29,7 @@ public class CompaniesApiControllerWireMockTests {
     private WebTestClient webTestClient;
 
     @Test
-    void givenAValidCompanyAsXML_WhenWeFetchIt_ThenWeGetTheExpectedJSON() {
+    void givenAValidCompanyAsXML_WhenWeFetchIt_ThenWeGetTheExpectedCompanyJSON() {
 
         // GIVEN
         wireMockServer.stubFor(WireMock.get("/xml-api/1.xml").willReturn(aResponse()
@@ -39,7 +40,7 @@ public class CompaniesApiControllerWireMockTests {
                         <id>1</id>
                         <name>MWNZ</name>
                         <description>..is awesome</description>
-                      </Data>    
+                      </Data>   
                     """))
 
         );
@@ -53,7 +54,34 @@ public class CompaniesApiControllerWireMockTests {
                 .is2xxSuccessful()
                 .expectBody().json(
                         """
-                        {"id":1,"name":"MWNZ","description":"..is awesome"}
+                        {
+                            "id": 1,
+                            "name": "MWNZ",
+                            "description": "..is awesome"
+                        }
+                        """);
+
+    }
+
+    @Test
+    void givenAMissingCompany_WhenWeFetchIt_ThenWeGetTheExpectedErrorJSON() {
+
+        // GIVEN
+        wireMockServer.stubFor(WireMock.get("/xml-api/0.xml").willReturn(status(404)));
+
+        // WHEN & THEN
+        this.webTestClient
+                .get()
+                .uri("/v1/companies/0")
+                .exchange()
+                .expectStatus()
+                .isNotFound()
+                .expectBody().json(
+                        """
+                        {
+                            "error": "NOT_FOUND",
+                            "error_description": "The company with id 0 was not found"
+                        }
                         """);
 
     }
