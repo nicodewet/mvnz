@@ -90,8 +90,15 @@
 		</dependency>
 
 		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-webflux</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<!-- Note the reason why this dependency is present: https://wiremock.org/docs/jetty-12/ -->
+		<dependency>
 			<groupId>org.wiremock</groupId>
-			<artifactId>wiremock</artifactId>
+			<artifactId>wiremock-jetty12</artifactId>
 			<version>3.6.0</version>
 			<scope>test</scope>
 		</dependency>
