@@ -10,8 +10,8 @@ public abstract class BaseApi {
 
     protected ApiClient apiClient;
 
-    public BaseApi() {
-        this(new ApiClient());
+    public BaseApi(String basePath) {
+        this(new ApiClient(basePath));
     }
 
     public BaseApi(ApiClient apiClient) {

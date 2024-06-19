@@ -31,8 +31,8 @@ import org.springframework.http.ResponseEntity;
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-06-18T07:56:15.293787+12:00[Pacific/Auckland]", comments = "Generator version: 7.5.0")
 public class CompaniesXmlApi extends BaseApi {
 
-    public CompaniesXmlApi() {
-        super(new ApiClient());
+    public CompaniesXmlApi(String basePath) {
+        super(new ApiClient(basePath));
     }
 
     public CompaniesXmlApi(ApiClient apiClient) {

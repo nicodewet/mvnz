@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.Module;
 import com.thorgil.openapi.mwnz.xml.client.api.CompaniesXmlApi;
 
 import org.openapitools.jackson.nullable.JsonNullableModule;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -25,8 +26,8 @@ public class OpenApiGeneratorApplication {
     }
 
     @Bean(name = "com.thorgil.openapi.mwnz.xml.client.api.CompaniesXmlApi")
-    public CompaniesXmlApi companiesXmlApi() {
-        return new CompaniesXmlApi();
+    public CompaniesXmlApi companiesXmlApi(@Value("${xml_api_base_url}")  String xmlApiBaseUrl) {
+        return new CompaniesXmlApi(xmlApiBaseUrl);
     }
 
 

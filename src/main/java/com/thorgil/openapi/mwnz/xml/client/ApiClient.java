@@ -89,8 +89,7 @@ public class ApiClient extends JavaTimeFormatter {
 
     private long waitTimeMillis = 10;
 
-    // Removed blob in this path: https://raw.githubusercontent.com/MiddlewareNewZealand/evaluation-instructions/blob/main
-    private String basePath = "https://raw.githubusercontent.com/MiddlewareNewZealand/evaluation-instructions/main";
+    private String basePath;
 
     private RestTemplate restTemplate;
 
@@ -98,12 +97,14 @@ public class ApiClient extends JavaTimeFormatter {
 
     private DateFormat dateFormat;
 
-    public ApiClient() {
+    public ApiClient(String basePath) {
+        this.basePath = basePath;
         this.restTemplate = buildRestTemplate();
         init();
     }
 
-    public ApiClient(RestTemplate restTemplate) {
+    public ApiClient(String basePath, RestTemplate restTemplate) {
+        this.basePath = basePath;
         this.restTemplate = restTemplate;
         init();
     }
