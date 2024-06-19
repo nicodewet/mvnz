@@ -105,6 +105,13 @@ but this has not been a higher priority than basic functional correctness in my 
 Telemetry using a scraping endpoint is not something we're building in right now, but it would be wise if one were to 
 take this code to production. The latter would naturally include alerting.
 
+### ProblemDetail - RFC 9457
+
+This is an aside, but as per [this example](https://stackoverflow.com/a/74998726/433900), it's worth remembering Spring provides an RFC
+9457 compliant 
+[ProblemDetail class](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/http/ProblemDetail.html) and 
+it is used by the framework by default (e.g. when a path parameter uses an incorrect type).
+
 ## Browser Component Considerations
 
 The provided companies API is being called from a browser component in the instructions. At present I have not provided headers for 
@@ -127,4 +134,4 @@ refactoring given the nature of the generated code and so thought testing layers
 Please see [CompaniesApiControllerWireMockTests](src/test/java/com/thorgil/mwnz/CompaniesApiControllerWireMockTests.java).
 
 As a TODO, additional test cases should be added to exercise the CompaniesApiController to ensure the Error model is returned in certain 
-cases such when the caller use and incorrect type - using Wiremock is unnecessary here. 
+cases such when the caller use and incorrect type - using Wiremock is unnecessary here.

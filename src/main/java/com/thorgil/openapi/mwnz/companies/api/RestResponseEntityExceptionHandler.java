@@ -45,7 +45,11 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
             error.setErrorDescription(MessageFormat.format(UNEXPECTED_ERROR_MESSAGE, pathParameter));
         }
 
-        logger.error("HttpClientErrorException: {}", httpClientErrorException.getMessage(), httpClientErrorException);
+        // Because not being able to find an element is unlikely to warrant logging at error level and an
+        // logging entire stack trace
+        if (status != NOT_FOUND) {
+            logger.error("HttpClientErrorException: {}", httpClientErrorException.getMessage(), httpClientErrorException);
+        }
 
         return handleExceptionInternal(httpClientErrorException, error, new HttpHeaders(), status, request);
     }
