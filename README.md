@@ -3,7 +3,9 @@ My [Spring Boot](https://spring.io/projects/spring-boot) implementation of a [MW
 
 ## Up & Running
 
-There are two main requirements to run this program on your local machine (in time a Docker image might be provided):
+## Running In Developer Mode
+
+There are two main requirements to run this program on your local machine:
 
 1. JDK 22 (compatibility with earlier versions has not been confirmed)
 2. Either using the Maven Wrapper Script (recommended) or installing Maven
@@ -18,6 +20,38 @@ this repository:
 ```
 mvnz  (git)-[main]- % ./mvnw spring-boot:run
 ```
+
+## Running Operator Mode
+
+### Docker Engine
+
+If you have docker engine running on your machine, you can run up the software as follows.
+
+Note the amd64 in the image tag refers to the intended processor architecture (adding an arm64 image is being worked on, as is the large
+image size).
+
+```
+% docker pull nicodewet/mwnz:latest-amd64
+% docker run --rm -it -p8080:8080 nicodewet/mwnz:latest-amd64
+```
+
+### Background
+
+The first iteration of building in image used the fastest path to get an image published. We'll make enhancement in time (there are a 
+number of enhancements that should be made ASAP).
+
+The exact publishing process:
+
+```
+% mvn spring-boot:build-image
+% docker run -it -p8080:8080 mwnz:0.0.1-SNAPSHOT
+% docker image tag mwnz:0.0.1-SNAPSHOT nicodewet/mwnz:latest-amd64
+% docker push nicodewet/mwnz:latest-amd64
+% docker rmi mwnz:0.0.0-SNAPSHOT
+% docker rmi nicodewet/mwnz:latest-amd64
+```
+
+## Quick Exercises
 
 Once the application is running, you can exercise it end-to-end using your favourite tool. I'll use cURL and jq from the command line.
 
