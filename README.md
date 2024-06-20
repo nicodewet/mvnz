@@ -48,7 +48,7 @@ use the one appropriate to your machine. If you are on a Mac with an M1 processo
 
 #### Background
 
-The first iteration of building in image used the fastest path to get an image published. We'll make enhancement in time (there are a 
+The first iteration of building an image used the fastest path to get an image published. We'll make enhancement in time (there are a 
 number of enhancements that should be made ASAP).
 
 The exact publishing process:
@@ -62,7 +62,7 @@ The exact publishing process:
 % docker rmi nicodewet/mwnz:latest-amd64
 ```
 
-The second iteration focussed on getting an arm64 image published as quickly as possible. I used a Dockerfile here rather which differs 
+The second iteration focussed on getting an arm64 image published as quickly as possible. I used a Dockerfile here which differs 
 from the previous process. I had to park image security concerns and other matters.
 
 ```
