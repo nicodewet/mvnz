@@ -30,7 +30,7 @@ mvnz  (git)-[main]- % ./mvnw spring-boot:run
 If you have docker engine running on your machine, you can run up the software as follows.
 
 [There are two images](https://hub.docker.com/r/nicodewet/mwnz/tags), one for OS/ARCH linux/arm64 and one for OS/ARCH linux/amd64, 
-use the one appropriate to your machine. If you areon a Mac with an M1 processor for example you'll use the arm64 image.
+use the one appropriate to your machine. If you are on a Mac with an M1 processor for example you'll use the arm64 image.
 
 #### Running on amd64
 
