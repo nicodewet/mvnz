@@ -6,6 +6,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.status;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.http.Fault;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
@@ -30,6 +31,7 @@ class CompaniesApiControllerWireMockTests {
     private WebTestClient webTestClient;
 
     @Test
+    @DisplayName("Given the XML API returns text/plain XML for a Company lookup then we get a Company model response")
     void givenAValidCompanyAsXML_WhenWeFetchIt_ThenWeGetTheExpectedCompanyJSON() {
 
         // GIVEN
@@ -65,6 +67,7 @@ class CompaniesApiControllerWireMockTests {
     }
 
     @Test
+    @DisplayName("Given the XML API returns Not Found for a Company lookup then we get an Error model response")
     void givenAMissingCompany_WhenWeFetchIt_ThenWeGetTheExpectedErrorJSON() {
 
         // GIVEN
@@ -92,6 +95,7 @@ class CompaniesApiControllerWireMockTests {
      * See: https://wiremock.org/docs/simulating-faults/#bad-responses
      */
     @Test
+    @DisplayName("Given the XML API unexpectedly closes the connection then we get an Error model response")
     void givenMalformedResponse_WhenWeFetchACompany_ThenWeGetTheExpectedErrorJSON() {
 
         // GIVEN
