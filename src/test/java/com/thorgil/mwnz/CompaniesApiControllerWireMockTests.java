@@ -21,7 +21,7 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ContextConfiguration(initializers = {WireMockInitializer.class})
 @AutoConfigureWebTestClient
-public class CompaniesApiControllerWireMockTests {
+class CompaniesApiControllerWireMockTests {
 
     @Autowired
     private WireMockServer wireMockServer;
@@ -80,7 +80,7 @@ public class CompaniesApiControllerWireMockTests {
                 .expectBody().json(
                         """
                         {
-                            "error": "NOT_FOUND",
+                            "error": "Not Found",
                             "error_description": "The company with id 0 was not found"
                         }
                         """);
@@ -108,7 +108,7 @@ public class CompaniesApiControllerWireMockTests {
                 .expectBody().json(
                         """
                         {
-                            "error": "INTERNAL_SERVER_ERROR",
+                            "error": "Internal Server Error",
                             "error_description": "An unexpected error occurred when fetching the company with id 1"
                         }
                         """);

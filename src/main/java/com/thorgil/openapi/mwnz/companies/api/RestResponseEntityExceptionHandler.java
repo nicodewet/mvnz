@@ -36,24 +36,28 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
     @ExceptionHandler(value = { HttpClientErrorException.class })
     protected ResponseEntity<Object> handleHttpClientErrorException(HttpClientErrorException httpClientErrorException, WebRequest request) {
         Error error = new Error();
-        HttpStatusCode status = httpClientErrorException.getStatusCode();
+        HttpStatusCode statusCode = httpClientErrorException.getStatusCode();
         String pathParameter = extractPathParameter(request, COMPANY_ID_PATTERN);
 
-        if (status == NOT_FOUND) {
-            error.setError(NOT_FOUND.name());
+        // We use getReasonPhrase below in both setError calls to keep this setting or the Error consistent with the
+        // problemDetail.getTitle() call in the overriden handleExceptionInternal in this class
+
+        if (statusCode == NOT_FOUND) {
+            error.setError(NOT_FOUND.getReasonPhrase());
             error.setErrorDescription(MessageFormat.format(COMPANY_NOT_FOUND_MESSAGE, pathParameter));
         } else {
-            error.setError(status.toString());
+            HttpStatus status = HttpStatus.valueOf(statusCode.value());
+            error.setError(status.getReasonPhrase());
             error.setErrorDescription(MessageFormat.format(UNEXPECTED_ERROR_MESSAGE, pathParameter));
         }
 
         // Because not being able to find an element is unlikely to warrant logging at error level and an
         // logging entire stack trace
-        if (status != NOT_FOUND) {
+        if (statusCode != NOT_FOUND) {
             exceptionHandlerLogger.error("HttpClientErrorException: {}", httpClientErrorException.getMessage(), httpClientErrorException);
         }
 
-        return handleExceptionInternal(httpClientErrorException, error, new HttpHeaders(), status, request);
+        return handleExceptionInternal(httpClientErrorException, error, new HttpHeaders(), statusCode, request);
     }
     @ExceptionHandler(value = { ResourceAccessException.class })
     protected ResponseEntity<Object> handleResourceAccessException(ResourceAccessException resourceAccessException, WebRequest request) {
@@ -62,7 +66,9 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
         String pathParameter = extractPathParameter(request, COMPANY_ID_PATTERN);
 
         Error error = new Error();
-        error.setError(status.name());
+        // We use getReasonPhrase below to keep this setting or the Error consistent with the
+        // problemDetail.getTitle() call in the overriden handleExceptionInternal in this class
+        error.setError(status.getReasonPhrase());
         error.setErrorDescription(MessageFormat.format(UNEXPECTED_ERROR_MESSAGE, pathParameter));
 
         exceptionHandlerLogger.error("ResourceAccessException: {}", resourceAccessException.getMessage(), resourceAccessException);
