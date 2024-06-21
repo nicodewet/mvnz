@@ -51,8 +51,8 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
             error.setErrorDescription(MessageFormat.format(UNEXPECTED_ERROR_MESSAGE, pathParameter));
         }
 
-        // Because not being able to find an element is unlikely to warrant logging at error level and an
-        // logging entire stack trace
+        // Because not being able to find an element is unlikely to warrant logging at error level and
+        // logging an entire stack trace
         if (statusCode != NOT_FOUND) {
             exceptionHandlerLogger.error("HttpClientErrorException: {}", httpClientErrorException.getMessage(), httpClientErrorException);
         }
@@ -76,10 +76,13 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
         return handleExceptionInternal(resourceAccessException, error, new HttpHeaders(), status, request);
     }
 
-    // We are simply getting rid of the RFC 9457 compliant ProblemDetail class here since the companies
-    // OpenAPI specification does not use ProblemDetail
+    // We are simply getting rid of the RFC 9457 compliant ProblemDetail class here since the companies OpenAPI
+    // specification does not use ProblemDetail. SUGGESTION: Take the time to study all the base class methods
+    // where this method is called, for example, the base class method handleTypeMismatch calls this method
+    // when we have an unexpected type in a client supplied HTTP path parameter.
     @Override
-    protected ResponseEntity<Object> handleExceptionInternal(Exception ex, @Nullable Object body, HttpHeaders headers, HttpStatusCode statusCode, WebRequest request) {
+    protected ResponseEntity<Object> handleExceptionInternal(Exception ex, @Nullable Object body, HttpHeaders headers,
+            HttpStatusCode statusCode, WebRequest request) {
 
         // The instanceof syntax, rendering casting unnecessary, is a language feature was finalized and became a
         // standard feature in Java 16
