@@ -168,7 +168,7 @@ cases such when the caller use and incorrect type - using Wiremock is unnecessar
 
 ## Appendix
 
-In this section I'm including reference material to in some cases record the journey I was on.
+In this section I'm including reference material to record the journey.
 
 ### Docker Imaging Process
 
@@ -222,3 +222,21 @@ This resulted in a near 50% saving in image size which is compelling.
 
 See [bellsoft/liberica-openjre-alpine-musl](https://github.com/bell-sw/Liberica/tree/master/docker/repos/liberica-openjre-alpine-musl) and
 then also [BellSoft's Docker Hub images overview](https://bell-sw.com/blog/bellsoft-s-docker-hub-images-overview/).
+
+Building the amd64 image was done as follows, as an example, 
+[there may be better ways](https://docs.docker.com/build/building/multi-platform/).
+
+```
+% docker build --platform linux/amd64 .
+% docker image tag b26b6f9f0d6910dfc5dd4529fd17292ea2aaf98a82a8b2e085ad949fe12c9bd8 nicodewet/mwnz:latest-amd64
+% docker push nicodewet/mwnz:latest-amd64
+```
+
+I chose to leverage [Docker Scout](https://www.docker.com/products/docker-scout/) Image analysis on Docker Hub. There are 4 medium severity vulnerabilities per image
+as the time of writing. 
+
+Ideally I want to get those down to 0. I used the Docker Scout interface to study each one. They are  all in C libraries on BusyBox, and 
+so I'm parking spending further time on this at this stage. The latter is because  as we have no fixable critical and high vulnerabilities 
+to attend to and so are policy compliant.
+
+I will however attend to other policy violations reported by Docker Scout when time allows.
