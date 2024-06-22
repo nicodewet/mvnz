@@ -9,8 +9,8 @@ If you simply want to run the software on your local machine skip to the [Runnin
 
 There are two main requirements to run this program on your local machine:
 
-1. JDK 22 (compatibility with earlier versions has not been confirmed)
-2. Either using the Maven Wrapper Script (recommended) or installing Maven
+1. JDK 22 - I recommend using the [BellSoft](https://bell-sw.com/pages/downloads/#jdk-22) Liberica JDK version 22. 
+2. Either using the Maven Wrapper Script (recommended) or installing Maven.
 
 If you want to get the application up and running on your machine, use the [Apache Maven
 Wrapper](https://maven.apache.org/wrapper/) and the scripts appropriate to your operating
@@ -29,8 +29,9 @@ mvnz  (git)-[main]- % ./mvnw spring-boot:run
 
 If you have docker engine running on your machine, you can run up the software as follows.
 
-[There are two images](https://hub.docker.com/r/nicodewet/mwnz/tags), one for OS/ARCH linux/arm64 and one for OS/ARCH linux/amd64, 
-use the one appropriate to your machine. If you are on a Mac with an M1 processor for example you'll use the arm64 image.
+[There are two images on Docker Hub](https://hub.docker.com/r/nicodewet/mwnz/tags), one for OS/ARCH linux/arm64 and one for 
+OS/ARCH linux/amd64. Use the one appropriate to your machine. If you are on a Mac with an M1 processor for example you'll use 
+the arm64 image.
 
 #### Running on amd64
 
@@ -44,31 +45,6 @@ use the one appropriate to your machine. If you are on a Mac with an M1 processo
 ```
 % docker pull nicodewet/mwnz:latest-arm64
 % docker run --rm -it -p8080:8080 nicodewet/mwnz:latest-arm64
-```
-
-#### Background
-
-The first iteration of building an image used the fastest path to get an image published. We'll make enhancement in time (there are a 
-number of enhancements that should be made ASAP).
-
-The exact publishing process:
-
-```
-% mvn spring-boot:build-image
-% docker run -it -p8080:8080 mwnz:0.0.1-SNAPSHOT
-% docker image tag mwnz:0.0.1-SNAPSHOT nicodewet/mwnz:latest-amd64
-% docker push nicodewet/mwnz:latest-amd64
-% docker rmi mwnz:0.0.0-SNAPSHOT
-% docker rmi nicodewet/mwnz:latest-amd64
-```
-
-The second iteration focussed on getting an arm64 image published as quickly as possible. I used a Dockerfile here which differs 
-from the previous process. I had to park image security concerns and other matters.
-
-```
-% ./mvnw clean install
-% docker build -t nicodewet/mwnz:latest-arm64 .
-% docker push nicodewet/mwnz:latest-arm64
 ```
 
 ## Quick Exercises
@@ -189,3 +165,60 @@ Please see [CompaniesApiControllerWireMockTests](src/test/java/com/thorgil/mwnz/
 
 As a TODO, additional test cases should be added to exercise the CompaniesApiController to ensure the Error model is returned in certain 
 cases such when the caller use and incorrect type - using Wiremock is unnecessary here.
+
+## Appendix
+
+In this section I'm including reference material to in some cases record the journey I was on.
+
+### Docker Imaging Process
+
+I was ultimately interested leveraging [GraalVM JDK](https://www.graalvm.org/)'s ahead-of-time Native Image compilation process but 
+abandoned this as I felt there were too many developer experience issues to warrant spending further time on it. Due to time constraints, 
+to continue with building a native image with GraalVM it had to work flawlessly with no additional effort on my part.
+
+I ultimately shifted my attention to what I have realised is now the [Spring Quickstart](https://spring.io/quickstart) recommended JDK, the 
+BellSoft JDK, and the associated images produced by BellSoft.
+
+#### Iteration 1
+
+The first iteration of building an image used the fastest path to get an image published. I noticed we'd have to make enhancement in time 
+and that there are a number of enhancements that should be made ASAP (e.g. producing an image with known vulnerabilities is something I'd 
+like to avoid).
+
+The exact publishing process is documented below.
+
+```
+% mvn spring-boot:build-image
+% docker run -it -p8080:8080 mwnz:0.0.1-SNAPSHOT
+% docker image tag mwnz:0.0.1-SNAPSHOT nicodewet/mwnz:latest-amd64
+% docker push nicodewet/mwnz:latest-amd64
+% docker rmi mwnz:0.0.0-SNAPSHOT
+% docker rmi nicodewet/mwnz:latest-amd64
+```
+
+This process was slow and produced an amd64 image which is not what I was expecting, so I tried other options.
+
+#### Iteration 2
+
+The second iteration focussed on getting an arm64 image published as quickly as possible. I used a Dockerfile here which differs
+from the previous process. I had to park image security concerns and other matters.
+
+```
+% ./mvnw clean install
+% docker build -t nicodewet/mwnz:latest-arm64 .
+% docker push nicodewet/mwnz:latest-arm64
+```
+
+The base image was: eclipse-temurin:22.0.1_8-jre-ubi9-minimal
+
+At this stage, I was wondering whether we couldn't do better, I wanted a smaller image size if possible and ideally a 0 vulnerability 
+guarantee.
+
+##### Iteration 3 - BellSoft Liberica JRE
+
+The final iteration of the image was to move to using a BellSoft base image utilising the Liberica JRE.
+
+This resulted in a near 50% saving in image size which is compelling.
+
+See [bellsoft/liberica-openjre-alpine-musl](https://github.com/bell-sw/Liberica/tree/master/docker/repos/liberica-openjre-alpine-musl) and
+then also [BellSoft's Docker Hub images overview](https://bell-sw.com/blog/bellsoft-s-docker-hub-images-overview/).
