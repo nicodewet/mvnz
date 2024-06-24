@@ -296,3 +296,159 @@ so I'm parking spending further time on this at this stage. The latter is becaus
 to attend to and so are policy compliant.
 
 I will however attend to the remaining supply chain attestation policy violation reported by Docker Scout when time allows.
+
+### Production Considerations
+
+Here I provide aspects to consider before taking this application to production.
+
+#### Quality Attribute Requirements Gathering
+
+This is a generic consideration, that is to consider the quality attribute requirements of our application in the various context(s) 
+where it may provide service. This will help focus our attention.
+
+#### Software Distribution
+
+Though I have utilised GitHub and Docker Hub, neither may be optimal long term. We should also provide a clear versioning strategy
+which may entail using semantic versioning.
+
+#### Supply Chain Attestation
+
+This is a security consideration. Software supply chain attestation may be required when supplying the software to third parties
+and is a general best practice. I've used Docker Scout and the task here would be to pass the provided policy check.
+
+#### Pipeline Establishment
+
+Building the software from localhost is clearly suboptimal. A suitable CI/CD toolchain should be used.
+
+#### Judiciously Include Spring Boot Production-ready Features
+
+Spring Boot's [Production-ready Features documentation](https://docs.spring.io/spring-boot/reference/actuator/index.html) serves as an 
+effective checklist of some aspects to consider before going to production. 
+
+Which elements to focus on first is a matter of context. I would start by focussing on three aspects.
+
+##### Observability
+
+Observability refers to making the internal state of a running system visible via the three pillars of logging, metrics and traces. 
+Naturally in doing so we would factor in the CIA Triad, referring to the Confidentiality, Integrity and Availability of information.
+
+Spring Boot Actuator provides [endpoints](https://docs.spring.io/spring-boot/reference/actuator/endpoints.html) that can be scraped by 
+monitoring systems such as Prometheus and more. The task here is to provide suitable telemetry guidance with associated suitable 
+alerting.
+
+I would consider whether investing in leveraging Spring Boot actuator's [support for OpenTelemetry](https://docs.spring.io/spring-boot/reference/actuator/observability.html#actuator.observability.opentelemetry) 
+is warranted. 
+
+##### Orchestrator Configuration
+
+There are many cloud native application orchestrators, for example Kubernetes. Aspects such as application liveness and readiness 
+via health endpoints and associated configuration is our concern here.
+
+##### Metrics Integration - Key JVM Metrics
+
+Monitoring essential JVM metrics is crucial for maintaining the performance, stability, and health of server-side Java applications.
+
+The task here is to ensure the key JVM (Java Virtual Machine) metrics are exposed in 
+the [Supported Monitoring System](https://docs.spring.io/spring-boot/reference/actuator/metrics.html#actuator.metrics.export).
+
+Some key JVM metrics and the reasons why they are important to monitor are:
+
+1. **Heap Memory Usage**
+    - **What to Monitor**: Current usage, maximum usage, and garbage collection (CG) details.
+    - **Why**: Helps in identifying memory leaks and understanding memory consumption patterns. Monitoring heap usage and GC activity can 
+   prevent OutofMemoryErrors and ensure efficient memory management.
+2. **Garbage Collection (GC) Metrics**
+   - **What to Monitor**: Number of collections, time spent in GC, and frequency of allocations.
+   - **Why**: Excessive GC can lead to performance issues and application pauses. Monitoring GC metrics helps in tuning GC settings and 
+   improving application performance.
+3. **Thread Count**
+   - **What to Monitor**: Current number of active threads, peak number of threads, and deadlocked threads.
+   - **Why**: Monitoring threads helps in identifying thread leaks, deadlocks, and ensuring that the application is not overwhelmed by too 
+   many threads, which can lead to resource exhausting.
+4. **CPU Usage**
+    - **What to Monitor**: CPU usage by the JVM process.
+    - **Why**: High CPU usage can indicate performance bottlenecks or inefficient code. Monitoring CPU usage helps in identify and addressing
+   such issues.
+5. **Class Loading**
+   - **What to Monitor**: Number of classes loaded and unloaded, and total classes currently loaded.
+   - **Why**: Monitoring class loading helps identify potential class loader memory leaks and understanding application behaviour related to 
+   class loading and unloading.
+6. **File Descriptors**
+   - **What to Monitor**: Number of open file descriptors.
+   - **Why**: Monitoring file descriptors is essential to ensure that the application does not exceed the limit imposed by the operating 
+   system, which can lead to failures in opening files or network connections.
+7. **JVM Uptime**
+   - **What to Monitor**: Total uptime of the JVM.
+   - **Why**: Provides information about the stability and longevity of the JVM process. Frequent restarts indicate underlying issues that 
+   need attention.
+8. **Buffer Pools**
+   - **What to Monitor**: Usage of direct and mapped buffer pools.
+   - **Why**: Monitoring buffer pools helps in understanding the allocation and usage of direct memory, which is not part of the heap but 
+   can improve overall memory usage.
+9. **Metaspace (or Permanent Generation in older JVMs)**
+    - **What to Monitor**: Usage of Metaspace or PermGen memory.
+    - **Why**: Metaspace/PermGen space is used for storing class metadata. Monitoring its usage helps in identifying memory leaks related 
+   to class loading and ensuring the space is not exhausted.
+10. **JVM Flags and System Properties**
+    - **What to Monitor**: JVM arguments and system properties.
+    - **Why**: Understanding the JVM configuration helps in debugging issues and optimizing performance based on how the JVM is tuned and 
+    configured.
+
+#### Embedded Web Server Decision
+
+##### Consider Alternatives
+
+We've used the default thread-per-request model used by Tomcat. It is suitable for many traditional web applications and 
+provides a straightforward, familiar programming model. However, for applications requiring high concurrency and efficient resource 
+utilization, especially those involving many I/O-bound operations, a non-blocking server like Reactor Netty might be a better 
+choice. So, we should consider the trade-offs when it comes to our embedded web server decision.
+
+It could also be that a "serverless" service provider approach 
+utilising [Spring Cloud Function](https://spring.io/projects/spring-cloud-function) would be more appropriate and the trade-offs in 
+doing so should be considered.
+
+##### Tomcat Configuration
+
+Spring Boot auto-configuration is useful for a quick start however when going to production we should know exactly what this 
+default configuration is, what it's impacts are and how to change it if need be.
+
+###### TODO
+###### TODO
+
+#### Caching
+
+In this application we use HTTP GET to fetch documents from a downstream server. It may be that we can safely cache the replies
+and don't need to call the downstream server upon every companies request. If the former is safe to do we should certainly 
+introduce caching as there are both upstream and downstream benefits.
+
+##### Resilience
+
+Though this has been mentioned elsewhere, including a fault tolerance library and judiciously enhancing the application in terms of 
+downstream calls should be factored in before going to production. [Resilience4j](https://resilience4j.readme.io/docs/getting-started) is 
+an excellent resource with helper modules that can be used to implement particular resilience patterns (e.g. retry).
+
+#### CORS
+
+Rather than allowing requests from any origin, we may want to lock this down to specific origins in the allowedOrigins method
+that could be loaded from an external source at runtime.
+
+#### OpenAPI Specification
+
+The generic consideration is how will we distribute the OpenAPI specification to clients. There are also versioning, 
+maintenance and supportive documentation consideration. These fall into the broader category of API management 
+but here we're focussing on the OpenAPI Specification. Would it be prudent or desirable to provide a Swagger UI 
+interface?
+
+#### Spring Boot Production Packaging Recommendations
+
+Spring Boot provides a number of production [Packaging Recommendations](https://docs.spring.io/spring-boot/reference/packaging/index.html).
+
+Immediate recommendations that I would want to implement include, but are not limited to:
+
+- [Unpacking the Executable JAR](https://docs.spring.io/spring-boot/reference/packaging/efficient.html#packaging.efficient.unpacking) - reduces startup time.
+- [Layered Docker Image](https://docs.spring.io/spring-boot/reference/packaging/container-images/efficient-images.html#packaging.container-images.efficient-images.layering) - provides several advantages that make it better for development and deployment.
+
+#### Additional Security Considerations
+
+Though we are dealing with a simple application, in a generic sense there are many security controls we have not covered. For example,
+we may want to configure HTTPS in production as it provides encryption, data integrity, and authentication for secure communications.
