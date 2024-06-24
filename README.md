@@ -144,14 +144,70 @@ it is used by the framework by default (e.g. when a path parameter uses an incor
 
 ## Browser Component Considerations
 
-The provided companies API is being called from a browser component in the instructions. At present I have not provided headers for 
-Cross-Origin Resource Sharing (CORS) in the response to API calls.
+The provided companies API is being called from a browser component in the instructions.
 
-As a TODO, I need to consider Cross-Origin Resource Sharing (CORS) when producing a RESTful web API that will be callable from a browser. 
+I have considered Cross-Origin Resource Sharing (CORS) as one should when producing a RESTful web API that will be callable from a browser. 
 CORS is a security feature implemented by browsers to restrict how resources on one web page can be requested from another domain. If the 
 companies API and the client consuming the API are on different domains, CORS needs to be handled properly.
 
-See [this guide that is relevant to Spring Boot](https://spring.io/guides/gs/rest-service-cors).
+The following CORS configuration is in place at the time of writing:
+
+1. All origins are allowed (a request to the specific pathPattern can originate from any origin).
+2. For the path /v1/companies/* with the * meaning match zero or more characters. See [AntPathMatcher](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/util/AntPathMatcher.html) for authoritative Ant-style path pattern documentation).
+3. The time that the preflight response is cached (maxAge) is 30 minutes.
+
+In the context of Cross-Origin Resource Sharing (CORS), "origin" refers to the combination of the protocol (like HTTP or HTTPS), the 
+domain (such as www.example.com), and the port (like 80 for HTTP or 443 for HTTPS) from which a web request is made.
+
+For example, if your web page is loaded from https://www.mysite.com:443, this is considered the origin. Any resource request made from 
+this web page to another location (like an API) that has a different protocol, domain, or port is considered a request to a different 
+origin.
+
+So, our configuration specifies that a web page loaded from any origin can interact with a specific resource in our API without 
+explicit permission.
+
+### Experimentation
+
+[This Spring Boot guide](https://spring.io/guides/gs/rest-service-cors) provides sample html and javascript that makes it extremely easy to experiment
+with CORS configuration. The sample files, which I have modified and supplied below, simply need to be placed in a top level 
+directory named **public**.
+
+index.html
+```html
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Hello CORS</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <script src="hello.js"></script>
+</head>
+
+<body>
+<div>
+    <p class="company-id">The ID is </p>
+    <p class="company-name">The content is </p>
+    <p class="company-description">The content is </p>
+</div>
+</body>
+</html>
+```
+hello.js
+```javascript
+$(document).ready(function() {
+    $.ajax({
+        url: "http://localhost:8080/v1/companies/1"
+    }).then(function(data, status, jqxhr) {
+       $('.company-id').append(data.id);
+       $('.company-name').append(data.content);
+       $('.company-description').append(data.description);
+       console.log(jqxhr);
+    });
+});
+```
+You can run up the sample website as follows:
+```
+% ./mvnw spring-boot:run -Dspring-boot.run.jvmArguments='-Dserver.port=9001'
+```
 
 ## Testing
 
