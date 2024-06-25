@@ -128,7 +128,7 @@ We're using Spring's Aspect Oriented Programming (AOP) abilities and are dealing
 
 In this class we use the Error model as specified in the openapi-companies.yaml specification.
 
-I have use dthe Error model for additional obvious validation errors and naturally we need to added test cases. As a TODO we may want to add appropriate backoff algorithms (ala resilience4j) but this has not been a higher priority than basic functional correctness in my mind.
+I have used the Error model for additional obvious validation errors and naturally have added test cases. As a TODO we may want to add appropriate backoff algorithms (ala resilience4j) but this has not been a higher priority than basic functional correctness in my mind.
 
 Telemetry using a scraping endpoint is not something we're building in right now, but it would be wise if one were to take this code to production. The latter would naturally include alerting.
 
@@ -205,6 +205,9 @@ You can run up the sample website as follows:
 ```
 % ./mvnw spring-boot:run -Dspring-boot.run.jvmArguments='-Dserver.port=9001'
 ```
+### CORS Tests
+
+These need to be added as a TODO, the CORS configuration has is present in main class OpenApiGeneratorApplication.
 
 ## Testing
 
