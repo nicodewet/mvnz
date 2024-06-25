@@ -207,23 +207,20 @@ You can run up the sample website as follows:
 ```
 ### CORS Tests
 
-These need to be added as a TODO, the CORS configuration as is present in main class OpenApiGeneratorApplication.
+These need to be added as a TODO, the CORS configuration is in main class [OpenApiGeneratorApplication](/src/main/java/com/thorgil/OpenApiGeneratorApplication.java).
 
-As an aside it would be interesting to explore how the OpenAPI specification could be adapted to include the CORS configuration, as if it is not in 
-the specification is would possibly be unreasonable for the client to have to discover the API configuration by execution.
+As an aside it would be interesting to explore how the OpenAPI specification could be adapted to include the CORS configuration, as if it is not in the specification is would possibly be unreasonable for the client to have to discover the API configuration by execution (by trial and error).
 
 ## Testing
 
-I'm not sure unit testing would be a good fit with the codebase as it is now, not just because we don't have a domain layer, but also
-because it would make refactoring harder (e.g. we may want to remove RestTemplate).
+I'm not sure unit testing would be a good fit with the codebase as it is now, not just because we don't have a domain layer, but also because it would make refactoring harder (e.g. we may want to remove RestTemplate).
 
 I opted to start with [wiremock](https://wiremock.org/) because I'm expecting to do significant 
 refactoring given the nature of the generated code and so thought testing layers within the application is not wise.
 
 Please see [CompaniesApiControllerWireMockTests](src/test/java/com/thorgil/mwnz/CompaniesApiControllerWireMockTests.java).
 
-Additional test cases have been added to exercise the CompaniesApiController to ensure the Error model is returned in certain 
-cases such as when the caller use and incorrect type - using Wiremock is unnecessary here and so I've not used it.
+Additional test cases have been added to exercise the CompaniesApiController to ensure the Error model is returned in certain cases such as when the caller use and incorrect type - using Wiremock is unnecessary here and so I've not used it.
 
 ## Appendix
 
