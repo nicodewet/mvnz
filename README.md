@@ -151,7 +151,7 @@ The following CORS configuration is in place at the time of writing:
 
 1. All origins are allowed (a request to the specific pathPattern can originate from any origin).
 2. For the path /v1/companies/* with the * meaning match zero or more characters. See [AntPathMatcher](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/util/AntPathMatcher.html) for authoritative Ant-style path pattern documentation).
-3. The time that the preflight response is cached (maxAge) is 30 minutes.
+3. The time that the preflight response should be cached (maxAge) by the browser is 30 minutes. The CORS specification allows preflight responses to be cached by specifying the Access-Control-Max-Age header in the preflight response. This header indicates how long the results of the preflight request can be cached, thus informing the browser not to send another preflight for the specified duration for requests to the same URL with the same method and headers.
 
 In the context of Cross-Origin Resource Sharing (CORS), "origin" refers to the combination of the protocol (like HTTP or HTTPS), the 
 domain (such as www.example.com), and the port (like 80 for HTTP or 443 for HTTPS) from which a web request is made.
@@ -207,7 +207,10 @@ You can run up the sample website as follows:
 ```
 ### CORS Tests
 
-These need to be added as a TODO, the CORS configuration has is present in main class OpenApiGeneratorApplication.
+These need to be added as a TODO, the CORS configuration as is present in main class OpenApiGeneratorApplication.
+
+As an aside it would be interesting to explore how the OpenAPI specification could be adapted to include the CORS configuration, as if it is not in 
+the specification is would possibly be unreasonable for the client to have to discover the API configuration by execution.
 
 ## Testing
 
