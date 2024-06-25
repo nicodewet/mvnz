@@ -1,4 +1,5 @@
-# mvnz
+# mwnz
+
 My [Spring Boot](https://spring.io/projects/spring-boot) implementation of a [MWNZ exercise](https://github.com/MiddlewareNewZealand/evaluation-instructions).
 
 ## Up & Running
@@ -219,8 +220,8 @@ refactoring given the nature of the generated code and so thought testing layers
 
 Please see [CompaniesApiControllerWireMockTests](src/test/java/com/thorgil/mwnz/CompaniesApiControllerWireMockTests.java).
 
-As a TODO, additional test cases should be added to exercise the CompaniesApiController to ensure the Error model is returned in certain 
-cases such when the caller use and incorrect type - using Wiremock is unnecessary here.
+Additional test cases have been added to exercise the CompaniesApiController to ensure the Error model is returned in certain 
+cases such as when the caller use and incorrect type - using Wiremock is unnecessary here and so I've not used it.
 
 ## Appendix
 
