@@ -157,7 +157,7 @@ In the context of Cross-Origin Resource Sharing (CORS), "origin" refers to the c
 domain (such as www.example.com), and the port (like 80 for HTTP or 443 for HTTPS) from which a web request is made.
 
 For example, if your web page is loaded from https://www.mysite.com:443, this is considered the origin. Any resource request made from 
-this web page to another location (like an API) that has a different protocol, domain, or port is considered a request to a different 
+this web page to another location (like an API) that has a different protocol, domain, or port is considered a request from a different 
 origin.
 
 So, our configuration specifies that a web page loaded from any origin can interact with a specific resource in our API without 
