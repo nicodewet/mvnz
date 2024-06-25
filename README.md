@@ -124,17 +124,13 @@ There are some things I would want to do immediately:
 
 This is a record of what was done to enhance the robustness of the application.
 
-We're using Spring's Aspect Oriented Programming (AOP) abilities and dealing with a subset of potential cases in
-RestResponseEntityExceptionHandler. 
+We're using Spring's Aspect Oriented Programming (AOP) abilities and are dealing with a subset of potential cases in RestResponseEntityExceptionHandler. 
 
 In this class we use the Error model as specified in the openapi-companies.yaml specification.
 
-This work is not done though, we need to use the Error model for additional obvious validation errors and naturally
-we need to add test cases. As an additional TODO we may want to add appropriate backoff algorithms (ala resilience4j)
-but this has not been a higher priority than basic functional correctness in my mind.
+I have use dthe Error model for additional obvious validation errors and naturally we need to added test cases. As a TODO we may want to add appropriate backoff algorithms (ala resilience4j) but this has not been a higher priority than basic functional correctness in my mind.
 
-Telemetry using a scraping endpoint is not something we're building in right now, but it would be wise if one were to 
-take this code to production. The latter would naturally include alerting.
+Telemetry using a scraping endpoint is not something we're building in right now, but it would be wise if one were to take this code to production. The latter would naturally include alerting.
 
 ### ProblemDetail - RFC 9457
 
