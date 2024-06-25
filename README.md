@@ -325,9 +325,19 @@ Building the software from localhost is clearly suboptimal. A suitable CI/CD too
 Spring Boot's [Production-ready Features documentation](https://docs.spring.io/spring-boot/reference/actuator/index.html) serves as an 
 effective checklist of some aspects to consider before going to production. 
 
-Which elements to focus on first is a matter of context. I would start by focussing on three aspects.
+Which elements to focus on first is a matter of context. I would start by focussing on three aspects which I have numbered.
 
-##### Observability
+The first listed item is generic.
+
+#### Judiciously Configure Relevant Spring Boot Common Application Properties
+
+Spring Boot auto configures most application properties but also supplies a wealth of 
+[Common Application Properties](https://docs.spring.io/spring-boot/appendix/application-properties/index.html).
+
+All of these properties can be modified inside the application's properties file and in turn fed in via environment variables to allow for
+dynamic configuration.
+
+##### 1. Observability
 
 Observability refers to making the internal state of a running system visible via the three pillars of logging, metrics and traces. 
 Naturally in doing so we would factor in the CIA Triad, referring to the Confidentiality, Integrity and Availability of information.
@@ -339,12 +349,17 @@ alerting.
 I would consider whether investing in leveraging Spring Boot actuator's [support for OpenTelemetry](https://docs.spring.io/spring-boot/reference/actuator/observability.html#actuator.observability.opentelemetry) 
 is warranted. 
 
-##### Orchestrator Configuration
+##### 2. Orchestrator Configuration
 
 There are many cloud native application orchestrators, for example Kubernetes. Aspects such as application liveness and readiness 
 via health endpoints and associated configuration is our concern here.
 
-##### Metrics Integration - Key JVM Metrics
+Additional orchestrator considerations is auto scaling. If we are able to scale horizontally the orchestrator would need to know when to 
+scale up and down. There are a variety of means of configuring auto scaling, for example in the case of Kubernetes the both 
+[Horizontal Pod Autoscaling](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/) and [KEDA based HTTP workload
+autoscaling options](https://keda.sh/docs/2.14/faq/#can-i-scale-http-workloads-with-keda-and-kubernetes) are available.
+
+##### 3. Metrics Integration - Key JVM Metrics
 
 Monitoring essential JVM metrics is crucial for maintaining the performance, stability, and health of server-side Java applications.
 
@@ -364,7 +379,7 @@ Some key JVM metrics and the reasons why they are important to monitor are:
 3. **Thread Count**
    - **What to Monitor**: Current number of active threads, peak number of threads, and deadlocked threads.
    - **Why**: Monitoring threads helps in identifying thread leaks, deadlocks, and ensuring that the application is not overwhelmed by too 
-   many threads, which can lead to resource exhausting.
+   many threads, which can lead to resource exhaustion.
 4. **CPU Usage**
     - **What to Monitor**: CPU usage by the JVM process.
     - **Why**: High CPU usage can indicate performance bottlenecks or inefficient code. Monitoring CPU usage helps in identify and addressing
@@ -410,10 +425,35 @@ doing so should be considered.
 ##### Tomcat Configuration
 
 Spring Boot auto-configuration is useful for a quick start however when going to production we should know exactly what this 
-default configuration is, what it's impacts are and how to change it if need be.
+default configuration is, what it's impacts are and how to change it if need be. The impacts of the thread-per-request model 
+and blocking I/O model need to be understood.
 
-###### TODO
-###### TODO
+###### Tomcat HTTP Connector Thread Configuration
+
+Irrespective of whether we have a single instance or vertical or horizontal auto scaling strategy, the need to keep a handle on the 
+relationship between our current thread pool configuration and the dynamic server load.
+
+Why? Because it's easy to forget about it or not think about in the first instance. In my own business, the e-commerce application that I 
+wrote failed to scale when it was at it's most successful in terms of revenue, i.e. **the worst possible time**. It literally meant 
+customers failed to enter the store because of the load and they were not happy (even worse they had to phone to ask us what is going on). 
+This happened when fronting Tomcat with Apache. We used the default 
+[AJP thread pool configuration](https://tomcat.apache.org/tomcat-9.0-doc/config/ajp.html) and essentially forgot this critical 
+thread pool even existed - I've never forgotten this experience.
+
+Particularly important thread pool configuration elements are as follows. I'n not going to specify mitigation strategies for brevity’s sake
+as there are a number.
+
+1. **MaxThreads**: The maximum number of threads in the pool. Defaults to 200 with Spring Boot and configured via 
+the application property [server.tomcat.threads.max](https://docs.spring.io/spring-boot/appendix/application-properties/index.html#application-properties.server.server.tomcat.threads.max).
+
+2. **MinSpareThreads**: The minimum number of idle threads that should be able to handle requests. Defaults to 10 with Spring Boot and 
+configured via the application property [server.tomcat.threads.min-spare](https://docs.spring.io/spring-boot/appendix/application-properties/index.html#application-properties.server.server.tomcat.threads.min-spare).
+
+3. **AcceptCount**: The maximum queue length for incoming connection requests when all possible request processing threads are in use. 
+Defaults to 100 with Spring Boot and configured via the application property [server.tomcat.accept-count](https://docs.spring.io/spring-boot/appendix/application-properties/index.html#application-properties.server.server.tomcat.accept-count).
+When the acceptCount limit is reached, any new connection requests will be immediately rejected. The rejection typically results in the 
+client (possibly an end user's web browser) receiving a connection error such as "connection refused" or "connection timed out message", 
+depending on how the client's connection handling is implemented.
 
 #### Caching
 
